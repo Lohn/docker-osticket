@@ -1,5 +1,5 @@
 # Deployment doesn't work on Alpine
-FROM php:7.2-cli AS deployer
+FROM php:7.4-cli AS deployer
 ENV OSTICKET_VERSION=1.12
 RUN set -x \
     && apt-get update \
@@ -15,7 +15,6 @@ RUN set -x \
     && chmod -R go= /data/upload/setup_hidden
 
 FROM php:7.4.20-fpm-alpine
-MAINTAINER Martin Campbell <martin@campbellsoftware.co.uk>
 # environment for osticket
 ENV HOME=/data
 # setup workdir
@@ -24,30 +23,30 @@ COPY --from=deployer /data/upload upload
 RUN set -x && \
     # requirements and PHP extensions
     apk add --no-cache --update \
-        wget \
-        msmtp \
-        ca-certificates \
-        supervisor \
-        nginx \
-        libpng \
-        c-client \
-        openldap \
-        libintl \
-        libxml2 \
-        icu \
-        openssl && \
+    wget \
+    msmtp \
+    ca-certificates \
+    supervisor \
+    nginx \
+    libpng \
+    c-client \
+    openldap \
+    libintl \
+    libxml2 \
+    icu \
+    openssl && \
     apk add --no-cache --virtual .build-deps \
-        imap-dev \
-        libpng-dev \
-        curl-dev \
-        openldap-dev \
-        gettext-dev \
-        libxml2-dev \
-        icu-dev \
-        autoconf \
-        g++ \
-        make \
-        pcre-dev && \
+    imap-dev \
+    libpng-dev \
+    curl-dev \
+    openldap-dev \
+    gettext-dev \
+    libxml2-dev \
+    icu-dev \
+    autoconf \
+    g++ \
+    make \
+    pcre-dev && \
     docker-php-ext-install gd curl ldap mysqli sockets gettext mbstring xml intl opcache && \
     docker-php-ext-configure imap --with-imap-ssl && \
     docker-php-ext-install imap && \
